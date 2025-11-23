@@ -19,3 +19,10 @@ export const updateEmployee=(empId,employee)=>axios.put(REST_API_BASE_URL +'/' +
 
 //DELETE EMPLOYEE
 export const deleteEmployee=(empId)=>axios.delete(REST_API_BASE_URL + '/' +empId);
+
+// DEPARTMENT FETCHING IN SEND
+export const listDepartments = () => axios.get('http://localhost:9099/hr/departments');
+
+//SENDING SOURCE AND DESTINATION TO BACKEND
+export const sendDepartmentTransfer = (details) => axios.post('http://localhost:9099/hr/send', details);
+

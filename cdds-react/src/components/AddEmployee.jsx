@@ -3,23 +3,14 @@ import { createEmployee } from '../services/EmployeeService';
 import { useNavigate } from 'react-router-dom';
 
 const AddEmployee = () => {
-    // empId: '',
-    // empName: '',
-    // address: '',
-    // empEmail:'',
-    // empDesignation: '',
-    // empLop: 0,
-    // department:{
-    //   deptId:'',
-    //   deptName:''
-    // }
-    
+  
   const [empId, setEmpId] = useState(0);
   const [empName, setEmpName] = useState('');
   const [address, setAddress] = useState('');
   const [empEmail, setEmpEmail] = useState('');
   const [empDesignation, setEmpDesignation] = useState('');
   const [empLop, setEmpLop] = useState(0);
+  const [empBaseSalary,setEmpBaseSalary]=useState(0);
 
   const [deptId, setDeptId] = useState(0);
   const [deptName, setDeptName] = useState('');
@@ -35,7 +26,8 @@ const AddEmployee = () => {
     department:{
       deptId:'',
       deptName:''
-    }
+    },
+    empBaseSalary:''
   });
 
 
@@ -55,17 +47,17 @@ const AddEmployee = () => {
     department: {
       deptId: Number(deptId),
       deptName
-    }
+    },
+    empBaseSalary:Number(empBaseSalary)
   };
 
   console.log("Final Employee Object:", newEmployee);
-  navigator('/employees')
 
   //API CALL
-  // createEmployee(newEmployee).then((response)=>{
-  //   console.log(response.data);
-  //    navigator('/employees')
-  // })
+  createEmployee(newEmployee).then((response)=>{
+    console.log(response.data);
+     navigator('/employees')
+  })
   }
   }
 
@@ -136,6 +128,14 @@ const AddEmployee = () => {
     }else{
       errorsData.department.deptName='Department name  is required';
       valid=false;
+    }
+
+    //BASE SALARY
+    if (empBaseSalary <= 0) {
+      errorsData.empBaseSalary = 'Salary must not be  negative';
+      valid = false;
+    } else {
+        errorsData.empBaseSalary = '';
     }
     setErrors(errorsData);
     return valid;
@@ -257,6 +257,19 @@ const AddEmployee = () => {
                                 onChange={(e) => setDeptName(e.target.value)}
                             />
                             {errors.department.deptName && <div className='invalid-feedback'>{errors.department.deptName}</div>}
+                        </div>
+
+                        {/* BASE SALARY */}
+                         <div className='form-group mb-2'>
+                            <label className='form-label'>Base Salary</label>
+                            <input
+                                type="number"
+                                name='empBaseSalary'
+                                value={empBaseSalary}
+                                className={`form-control ${errors.empBaseSalary? 'is-invalid':''}`}
+                                onChange={(e) => setEmpBaseSalary(e.target.value)}
+                            />
+                            {errors.empBaseSalary && <div className='invalid-feedback'>{errors.empBaseSalary}</div>}
                         </div>
                         <button className='btn btn-success' onClick={handleSubmit}>Submit</button>
                     </form>

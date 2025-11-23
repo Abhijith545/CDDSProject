@@ -1,44 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './index.css';
-import Header from './components/Header'
-import Sidebar from './components/Sidebar'
-import Footer from './components/Footer'
-import { Routes, Route, Navigate } from 'react-router-dom';
-import ListEmployee from './components/ListEmployee';
-import AddEmployee from './components/AddEmployee';
-import UpdateEmployee from './components/UpdateEmployee';
-import ViewEmployee from './components/ViewEmployee';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import Login from "./components/Login";
+import ListEmployee from "./components/ListEmployee";
+import AddEmployee from "./components/AddEmployee";
+import UpdateEmployee from "./components/UpdateEmployee";
+import ViewEmployee from "./components/ViewEmployee";
+
+// Finance imports
+import FinanceLayout from "./components/FinanceLayout";
+import { FinanceProvider } from "./components/context/FinanceContext";
+
+import RequireAuth from "./components/RequireAuth";
 
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
-    <Header />
-      <Sidebar />
-      <main className="main-content">
-        <div className="container-fluid">
-          <Routes>
-            {/* For localhost normal port */}
-            <Route path="/" element={<Navigate to="/employees" replace />} />
-            {/* for /employees url */}
-            <Route path="/employees" element={<ListEmployee />} />
-            <Route path="*" element={<Navigate to="/employees" replace />} />
-            <Route path='/add-employee' element={<AddEmployee/>}></Route>
+    <ToastContainer/>
+    <Routes>
+      {/* default */}
+      <Route path="/" element={<Navigate to="/employees" replace />} />
 
-            {/* for edit employee url--user goes to updateEmployee page */}
-            {/* //https://localhost:5134/updateEmployee/1 */}
-            <Route path='/edit-employee/:id' element={<UpdateEmployee/>}></Route>
-            <Route path='/view-employee/:id' element={<ViewEmployee/>}></Route>
-          </Routes>
-        </div>
-      </main>
-      <Footer />
+      {/* login */}
+      <Route path="/login" element={<Login />} />
+
+      {/* HR routes */}
+      <Route
+        path="/employees"
+        element={
+          <RequireAuth allowedRoles={['HR']}>
+            <ListEmployee />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/add-employee"
+        element={
+          <RequireAuth allowedRoles={['HR']}>
+            <AddEmployee />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/edit-employee/:id"
+        element={
+          <RequireAuth allowedRoles={['HR']}>
+            <UpdateEmployee />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/view-employee/:id"
+        element={
+          <RequireAuth allowedRoles={['HR']}>
+            <ViewEmployee />
+          </RequireAuth>
+        }
+      />
+
+      {/* Finance */}
+      <Route
+        path="/finance/*"
+        element={
+          <RequireAuth allowedRoles={['Finance']}>
+            <FinanceProvider>
+              <FinanceLayout />
+            </FinanceProvider>
+          </RequireAuth>
+        }
+      />
+
+      {/* fallback */}
+      <Route path="*" element={<Navigate to="/employees" replace />} />
+    </Routes>
     </>
-  )
+  );
 }
 
-export default App
+

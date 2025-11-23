@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-// import { getEmployeeById } from '../services/EmployeeService';
+import { getEmployeeById } from '../services/EmployeeService';
 
-const dummyData = [
-  { empId: 1, empName: 'Gayathri', address: 'Hyderabad', empDesignation: 'TSD', empEmail: 'yg@gmail.com', empLop: 0, department: { deptId: 1, deptName: 'HR' } },
-  { empId: 2, empName: 'Kaivalya', address: 'Vizag', empDesignation: 'SD', empEmail: 'kai@gmail.com', empLop: 0, department: { deptId: 2, deptName: 'Finance' } },
-  { empId: 3, empName: 'Vihaan', address: 'Vijayawada', empDesignation: 'TSD', empEmail: 'vh@gmail.com', empLop: 0, department: { deptId: 1, deptName: 'HR' } }
-];
 
 const ViewEmployee = () => {
 
@@ -18,21 +13,9 @@ const ViewEmployee = () => {
 
   useEffect(() => {
     // API CALL
-    // getEmployeeById(id)
-    //   .then(res => { setEmployee(res.data); setError(''); })
-    //   .catch(() => setError('Failed to load employee'));
-    
-
-    // Dummy data 
-    const emp = dummyData.find(e => Number(e.empId) === Number(id));
-
-    if (!emp) {
-      setError('Employee not found');
-      setEmployee(null);
-    } else {
-      setEmployee(emp);
-      setError('');
-    }
+    getEmployeeById(id)
+      .then(res => { setEmployee(res.data); setError(''); })
+      .catch(() => setError('Failed to load employee'));
   }, [id]);
 
   if (error) return <div className="text-danger">{error}</div>;
@@ -112,6 +95,12 @@ const ViewEmployee = () => {
             <label className="form-label">Designation</label>
             <input type="text" className="form-control" value={employee.empDesignation} readOnly />
           </div>
+
+          <div className="col-md-6 mb-2">
+            <label className="form-label">Base Salary</label>
+            <input type="text" className="form-control" value={employee.empBaseSalary} readOnly />
+          </div>
+
 
           {/* Buttons */}
           <div className="col-12 mt-3">
