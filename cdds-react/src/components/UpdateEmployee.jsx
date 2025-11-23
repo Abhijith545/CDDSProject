@@ -1,36 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-// import { getEmployeeById, updateEmployee } from '../services/EmployeeService';
-
-const dummyData = [
-  {
-    empId: 1,
-    empName: 'Gayathri',
-    address: 'Hyderabad',
-    empDesignation: 'TSD',
-    empEmail: 'yg@gmail.com',
-    empLop: 0,
-    department: { deptId: 1, deptName: 'HR' }
-  },
-  {
-    empId: 2,
-    empName: 'Kaivalya',
-    address: 'Vizag',
-    empDesignation: 'SD',
-    empEmail: 'kai@gmail.com',
-    empLop: 0,
-    department: { deptId: 2, deptName: 'Finance' }
-  },
-  {
-    empId: 3,
-    empName: 'Vihaan',
-    address: 'Vijayawada',
-    empDesignation: 'TSD',
-    empEmail: 'vh@gmail.com',
-    empLop: 0,
-    department: { deptId: 1, deptName: 'HR' }
-  }
-];
+import { getEmployeeById, updateEmployee } from '../services/EmployeeService';
 
 const UpdateEmployee = () => {
   const { id } = useParams();
@@ -44,6 +14,7 @@ const UpdateEmployee = () => {
   const [empLop, setEmpLop] = useState(0);
   const [deptId, setDeptId] = useState(0);
   const [deptName, setDeptName] = useState('');
+  const[empBaseSalary,setEmpBaseSalary]=useState(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -52,31 +23,19 @@ const UpdateEmployee = () => {
     setLoading(true);
 
     // API
-    // getEmployeeById(id)
-    //   .then(response => {
-    //     const emp = response.data;
-    //     prefill(emp);
-    //     setError('');
-    //   })
-    //   .catch(err => {
-    //     setError('Failed to load employee');
-    //   })
-    //   .finally(() => {
-    //     setLoading(false);
-    //   });
+    getEmployeeById(id)
+      .then(response => {
+        const emp = response.data;
+        prefill(emp);
+        setError('');
+      })
+      .catch(err => {
+        setError('Failed to load employee');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
     
-
-    
-    const emp = dummyData.find(e => Number(e.empId) === Number(id));
-
-    if (!emp) {
-      setError('Employee not found');
-    } else {
-      prefill(emp);
-      setError('');
-    }
-
-    setLoading(false);
   }, [id]);
 
   function prefill(emp) {
@@ -88,6 +47,7 @@ const UpdateEmployee = () => {
     setEmpLop(emp.empLop ?? 0);
     setDeptId(emp.department?.deptId ?? 0);
     setDeptName(emp.department?.deptName ?? '');
+    setEmpBaseSalary(emp.empBaseSalary?? 0);
   }
 
   const handleSubmit = (e) => {
@@ -104,22 +64,20 @@ const UpdateEmployee = () => {
       department: {
         deptId: deptId,
         deptName: deptName.trim()
-      }
+      },
+      empBaseSalary:empBaseSalary
     };
 
     //API
-    // updateEmployee(id, updatedEmp)
-    //   .then((response) => {
-        //console.log(response.data);
-    //     navigate('/employees');
-    //   })
-    //   .catch(() => {
-    //     setError('Update failed');
-    //   });
+    updateEmployee(id, updatedEmp)
+      .then((response) => {
+        console.log(response.data);
+        navigate('/employees');
+      })
+      .catch(() => {
+        setError('Update failed');
+      });
     
-
-    console.log("Dummy update:", updatedEmp);
-    navigate('/employees');
   };
 
   if (loading) return <div>Loading...</div>;
@@ -208,6 +166,16 @@ const UpdateEmployee = () => {
             value={deptName}
             className="form-control"
             onChange={(e) => setDeptName(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group mb-2">
+          <label>Base Salary</label>
+          <input
+            type="number"
+            value={empBaseSalary}
+            className="form-control"
+            onChange={(e) => setEmpBaseSalary(Number(e.target.value))}
           />
         </div>
 
